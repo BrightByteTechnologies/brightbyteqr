@@ -1,0 +1,38 @@
+* {
+    box-sizing: border-box;
+    user-select: none;
+}
+
+html {
+    background-color: rgb(50, 50, 50);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+h1, h2, h3, h4, p, label, div, form {
+    color: whitesmoke;
+    text-align: center;
+}
+
+select, button {
+    border: none;
+}
+
+img {
+    border: .2em white solid;
+    border-radius: .2em;
+}
+
+#generate {
+    width: 40%;
+    padding: 2%;
+    margin-top: 1%;
+}
+
+#qr-code {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
