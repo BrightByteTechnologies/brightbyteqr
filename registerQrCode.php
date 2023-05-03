@@ -6,7 +6,7 @@
   $config = file_get_contents('config.json');
   $data = json_decode($config, true);
 
-  $API_KEY = $data['API'][1]['key'];
+  $API_KEY = $data['API'][2]['key'];
   $restaurantId = $data['RESTAURANT']['id'];
 
   $data = array(
@@ -18,7 +18,7 @@
   $jsonData = json_encode($data);
 
   $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, 'http://localhost:3000/qrcodes/register');
+  curl_setopt($ch, CURLOPT_URL, 'api.brightbytetechnologies.de/qrcodes/register');
   curl_setopt($ch, CURLOPT_POST, 1);
   curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
   curl_setopt($ch, CURLOPT_HTTPHEADER, array('api-key: ' . $API_KEY, 'Content-Type: application/json'));
@@ -29,7 +29,7 @@
     $error_msg = curl_error($ch);
     echo json_encode(array('response' => $error_msg, 'code' => $httpCode));
   } else {
-    $url = "http://order.brightbytetechnologies.de/?token=" . urlencode($token) . "&tableNo=" . urlencode($tableNo);
+    $url = "http://order.brightbytetechnologies.de/?token=" . $token . "&tableNo=" . $tableNo;
     echo json_encode(array('qrcodeurl' => $url, 'code' => $httpCode));
   }
   curl_close($ch);    

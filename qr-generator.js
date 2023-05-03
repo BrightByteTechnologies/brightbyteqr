@@ -1,15 +1,14 @@
 const form = document.getElementById('generate-form');
 const qr = document.getElementById('qr-code');
 const countdownElement = document.getElementById("countdown");
-
 const onGenerateSubmit = async (e) => {
   e.preventDefault();
   clearUI();
 
-  const selectValue = parseInt(document.getElementById('tableSelect').value, 10);
+  const selectValue = document.getElementById('tableSelect').value;
 
   // Validate user input
-  if (isNaN(selectValue) || selectValue <= 0) {
+  if (selectValue === undefined) {
     console.error('Invalid table number:', selectValue);
     return;
   }
@@ -54,8 +53,11 @@ const registerToken = async (tableNo) => {
   const response = await fetch(url, { credentials: 'include' });
   const data = await response.json();
 
-  const qrCodeUrl = data.qrcodeurl;
-  generateQRCode(qrCodeUrl);
+  if (data.qrcodeurl !== undefined) {
+    const qrCodeUrl = data.qrcodeurl;
+    console.error(data.code);
+    generateQRCode(qrCodeUrl);
+  }
 };
 
 const clearUI = () => {
