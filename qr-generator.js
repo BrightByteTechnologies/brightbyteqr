@@ -1,33 +1,83 @@
 const form = document.getElementById('generate-form');
 const qr = document.getElementById('qr-code');
 const countdownElement = document.getElementById("countdown");
+let isGeneratingQRCode = false;
+
+var tables;
+jQuery.ajax({
+  type: "GET",
+  url: 'utils.php',
+  data: { functionName: 'getTables' },
+  success: function (response) {
+    tables = JSON.parse(response);
+    updateTableList();
+  }
+});
+
+// Define a function that updates the select element with the new options
+function updateTableList() {
+  // Get the select element
+  var select = $('#tableSelect');
+
+  // Clear all existing options
+  select.empty();
+
+  // Loop through the tables and create a new option for each one
+  for (var i = 0; i < tables.length; i++) {
+    var table = tables[i];
+
+    // Create a new option element
+    if (!table.reserved) {
+      var option = $('<option>');
+      option.attr('value', table.tableNo);
+      option.text(table.tableNo);
+
+      // Add the option to the select element
+      select.append(option);
+    }
+  }
+}
+function updateTables(tableNo) {
+  var table = tables.find(t => t.tableNo === tableNo);
+  table.reserved = 1;
+  updateTableList();
+}
 const onGenerateSubmit = async (e) => {
-  e.preventDefault();
-  clearUI();
-
-  const selectValue = document.getElementById('tableSelect').value;
-
-  // Validate user input
-  if (selectValue === undefined) {
-    console.error('Invalid table number:', selectValue);
-    return;
-  }
-
-  try {
-    // Register token and generate QR-Code safely
-    await registerToken(selectValue);
-  } catch (error) {
-    console.error('Error generating QR code:', error);
-  }
-
-  form.style.display = "none";
-
-  // Start countdown safely
-  startCountdown(30, function () {
+  if (!isGeneratingQRCode) {
+    isGeneratingQRCode = true;
+    e.preventDefault();
     clearUI();
-    form.style.display = "block";
-    countdownElement.style.display = "none";
-  });
+
+    const selectValue = document.getElementById('tableSelect').value;
+
+    // Validate user input
+    if (selectValue === undefined) {
+      console.error('Invalid table number:', selectValue);
+      return;
+    }
+
+    try {
+      // Register token and generate QR-Code safely
+
+      // Sanitize data input
+      const sanitizedTableNo = encodeURIComponent(selectValue);
+      await registerQRCode(sanitizedTableNo);
+      await reserveTable(sanitizedTableNo);
+      updateTables(sanitizedTableNo);
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+    }
+
+    form.style.display = "none";
+
+    // Start countdown safely
+    startCountdown(30, function () {
+      clearUI();
+      form.style.display = "block";
+      countdownElement.style.display = "none";
+      isGeneratingQRCode = false;
+    });
+  }
 };
 
 const generateQRCode = (url) => {
@@ -44,21 +94,32 @@ const generateQRCode = (url) => {
   });
 };
 
-const registerToken = async (tableNo) => {
-  // Sanitize data input
-  const sanitizedTableNo = encodeURIComponent(tableNo);
-
-  const url = `registerQrCode.php/?tableNo=${sanitizedTableNo}`;
-
-  const response = await fetch(url, { credentials: 'include' });
-  const data = await response.json();
-
-  if (data.qrcodeurl !== undefined) {
-    const qrCodeUrl = data.qrcodeurl;
-    console.error(data.code);
-    generateQRCode(qrCodeUrl);
-  }
+const registerQRCode = async (tableNo) => {
+  jQuery.ajax({
+    type: "GET",
+    url: 'utils.php',
+    data: { functionName: 'registerQRCode', tableNo:  tableNo},
+    success: function (response) {
+      data = JSON.parse(response);
+      if (data.qrcodeurl !== undefined) {
+        const qrCodeUrl = data.qrcodeurl;
+        generateQRCode(qrCodeUrl);
+      }
+    }
+  });
 };
+
+const reserveTable = async (tableNo) => {
+  jQuery.ajax({
+    type: "GET",
+    url: 'utils.php',
+    data: { functionName: 'reserveTable', tableNo:  tableNo},
+    success: function (response) {
+      
+    }
+  });
+
+}
 
 const clearUI = () => {
   // Reset QR code safely
