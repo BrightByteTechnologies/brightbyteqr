@@ -13,7 +13,7 @@
 
 <body>
     <h1>QR-Code Generator zum bestellen mit unseren Roboter </h1>
-    <h2>Bitte halten Sie ihr Smartphone bereit </h2>
+    <h2>Bitte halten Sie Ihr Smartphone bereit </h2>
     <form id="generate-form">
         <label for="tableSelect">Tischnummer:</label>
         <select name="tableNo" id="tableSelect">
