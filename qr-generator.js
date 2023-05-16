@@ -113,7 +113,7 @@ const reserveTable = async (tableNo) => {
   jQuery.ajax({
     type: "GET",
     url: 'utils.php',
-    data: { functionName: 'reserveTable', tableNo:  tableNo},
+    data: { functionName: 'reserveTable', tableNo:  tableNo, reservedTime: 3},
     success: function (response) {
       
     }
