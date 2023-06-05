@@ -89,7 +89,7 @@ function reserveTable()
   $jsonArray = array(
     'restaurant_id' => $restaurantId,
     'tableNo' => $_GET['tableNo'],
-    'reservedTime' => 3600 * $_GET['reservedTime']
+    'reservedTime' => 3600 * 3
   );
 
   $jsonData = json_encode($jsonArray);

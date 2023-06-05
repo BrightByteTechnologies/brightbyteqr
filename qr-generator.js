@@ -4,15 +4,17 @@ const countdownElement = document.getElementById("countdown");
 let isGeneratingQRCode = false;
 
 var tables;
-jQuery.ajax({
-  type: "GET",
-  url: 'utils.php',
-  data: { functionName: 'getTables' },
-  success: function (response) {
-    tables = JSON.parse(response);
-    updateTableList();
-  }
-});
+function getCurrentTables() {
+  jQuery.ajax({
+    type: "GET",
+    url: 'utils.php',
+    data: { functionName: 'getTables' },
+    success: function (response) {
+      tables = JSON.parse(response);
+      updateTableList();
+    }
+  });
+}
 
 // Define a function that updates the select element with the new options
 function updateTableList() {
@@ -37,11 +39,7 @@ function updateTableList() {
     }
   }
 }
-function updateTables(tableNo) {
-  var table = tables.find(t => t.tableNo === tableNo);
-  table.reserved = 1;
-  updateTableList();
-}
+
 const onGenerateSubmit = async (e) => {
   if (!isGeneratingQRCode) {
     isGeneratingQRCode = true;
@@ -63,7 +61,7 @@ const onGenerateSubmit = async (e) => {
       const sanitizedTableNo = encodeURIComponent(selectValue);
       await registerQRCode(sanitizedTableNo);
       await reserveTable(sanitizedTableNo);
-      updateTables(sanitizedTableNo);
+      getCurrentTables(); 
     } catch (error) {
       console.error('Error generating QR code:', error);
     }
@@ -98,7 +96,7 @@ const registerQRCode = async (tableNo) => {
   jQuery.ajax({
     type: "GET",
     url: 'utils.php',
-    data: { functionName: 'registerQRCode', tableNo:  tableNo},
+    data: { functionName: 'registerQRCode', tableNo: tableNo },
     success: function (response) {
       data = JSON.parse(response);
       if (data.qrcodeurl !== undefined) {
@@ -113,9 +111,9 @@ const reserveTable = async (tableNo) => {
   jQuery.ajax({
     type: "GET",
     url: 'utils.php',
-    data: { functionName: 'reserveTable', tableNo:  tableNo, reservedTime: 3},
+    data: { functionName: 'reserveTable', tableNo: tableNo},
     success: function (response) {
-      
+
     }
   });
 
