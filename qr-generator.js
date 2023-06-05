@@ -3,6 +3,7 @@ const qr = document.getElementById('qr-code');
 const countdownElement = document.getElementById("countdown");
 let isGeneratingQRCode = false;
 
+getCurrentTables();
 var tables;
 function getCurrentTables() {
   jQuery.ajax({
