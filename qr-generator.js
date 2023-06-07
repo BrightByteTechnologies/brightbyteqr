@@ -11,8 +11,14 @@ function getCurrentTables() {
     url: 'utils.php',
     data: { functionName: 'getTables' },
     success: function (response) {
-      tables = JSON.parse(response);
-      updateTableList();
+      try {
+        tables = JSON.parse(response);
+        updateTableList();
+      } catch (error) {
+        console.error(error);
+        console.error(response);
+      }
+
     }
   });
 }
@@ -103,6 +109,8 @@ const registerQRCode = async (tableNo) => {
       if (data.qrcodeurl !== undefined) {
         const qrCodeUrl = data.qrcodeurl;
         generateQRCode(qrCodeUrl);
+      } else {
+        console.error("No QR-CODE", response);
       }
     }
   });
